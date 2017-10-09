@@ -1,19 +1,22 @@
+import os
+import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 ########## CONSTANTS ###############
 
 SIZE = 25,25
-POSITION_BOUNDS = 100 # max 300 
+POSITION_BOUNDS = 10 # max 300 
 ROTATION_DEG = 90
-MAX_SIZE = 100 # % change in size
-THICKNESS = 5
+MAX_SIZE = 10 # % change in size
+THICKNESS = 5 
 MARKS_INDEX = 5
 
 ####################################
 
 cards = np.zeros(5)
-
+####### open and resize images to 250 pixels 
+##  as it is easy to analyze  #####
 circle = Image.open("zener-images/circle.jpg")
 plus = Image.open("zener-images/plus.jpg")
 square = Image.open("zener-images/square.jpg")
@@ -21,19 +24,19 @@ star = Image.open("zener-images/star.jpg")
 wavy = Image.open("zener-images/wavy.jpg")
 circle = circle.resize((250,250))
 plus = plus.resize((250,250))
-square = square.resize((250,250))im
+square = square.resize((250,250))
 star = star.resize((250,250))
 wavy = wavy.resize((250,250))
-images = [circle,plus,square,star,wavy]
-white = Image.new('RGBA', (300,300), (255,255,255,255)) 
-orig_image = []
+images = [circle,plus,square,star,wavy] # original images stored in array
+orig_image = [] #Declared global array to stored test data set so that
+				# it can be accessed by all methods 
 
 def position(n):
-	print "in position"
+	"Method to reposition a image"
 	temp_image = Image.new('RGBA', (300,300), (255,255,255,255)) 
-	x1 =  np.random.randint(POSITION_BOUNDS)
+	x1 =  np.random.randint(POSITION_BOUNDS) #starting positions
 	y1 = np.random.randint(POSITION_BOUNDS)
-	x2,y2 = 250,250
+	x2,y2 = 250,250 # size of original image
 	temp_image.paste(orig_image[n],(x1,y1,x2+x1,y2+y1))
 	temp_image.resize((250,250))
 	orig_image[n] = temp_image
@@ -41,8 +44,11 @@ def position(n):
 	
 
 def orientation(n):
-	print "in orientation"
-	orig_image[n] = orig_image[n].rotate(np.random.randint(ROTATION_DEG))
+	"Method to change orientation of an image"
+	orig_image[n] = orig_image[n].convert('RGBA')
+	orig_image[n] = orig_image[n].rotate(np.random.randint(ROTATION_DEG),expand = 1)
+	white = Image.new('RGBA',orig_image[n].size, (255,255,255,255))
+	orig_image[n] = Image.composite(orig_image[n],white,orig_image[n]) # to avoid black corners
 	choice = np.random.randint(3)
 	if choice == 0:
 		orig_image[n]=orig_image[n].transpose(Image.FLIP_LEFT_RIGHT)
@@ -52,9 +58,9 @@ def orientation(n):
 
 
 def size(n):
-	print "in size"
+	"Method to expand or shrink object in an image"
 	width, height = orig_image[n].size
-	percentage = np.random.randint(MAX_SIZE)
+	percentage = np.random.randint(MAX_SIZE) # denotes percentage of expand/shrink 
 	do_expand = np.random.randint(2) # 1 to expand 0 to shrink
 	if do_expand == 0:
 		orig_image[n] = orig_image[n].resize((int(250-250*(percentage/100.0))
@@ -74,7 +80,7 @@ def size(n):
 
 
 def thickness(n):
-	print "in thickness"
+	"Method to change thickness of an object in image"
 	thick= np.random.randint(THICKNESS)
 	thin = np.random.randint(THICKNESS)
 	for i in range(thick):
@@ -85,7 +91,7 @@ def thickness(n):
 
 
 def marks(n):
-	print "in marks"
+	"Method to introduce various random marks in an image"
 	draw = ImageDraw.Draw(orig_image[n])
 	x,y = orig_image[n].size
 	for i in range(np.random.randint(MARKS_INDEX)):
@@ -102,13 +108,17 @@ def marks(n):
 
 	for i in range(np.random.randint(MARKS_INDEX)):
 		x1 = np.random.randint(x-1)
-		x2 = np.random.randint(x-1)
+		x2 = np.random.randint(min(x1+MARKS_INDEX*10,x-1))
 		y1 = np.random.randint(y-1)
-		y2 = np.random.randint(y-1)
+		y2 = np.random.randint(min(y1+MARKS_INDEX*10,y-1))
 		draw.ellipse((x1,y1,x2,y2), fill=(255,255,255))
 	orig_image[n] = orig_image[n].resize((250,250))
 
-for i in range(10):
+
+
+folder_name = sys.argv[1]
+
+for i in range(int(sys.argv[2])):
 	choice = np.random.randint(4)
 	image = images[choice]
 	orig_image.append(image)
@@ -117,7 +127,6 @@ for i in range(10):
 		case = np.random.randint(5)
 		if case == 0:
 			position(i)
-			print i
 		if case == 1:
 			orientation(i)
 		elif case == 2:
@@ -128,7 +137,7 @@ for i in range(10):
 			marks(i)
 	orig_image[i].resize((250,250))
 	file_name = ''
-	file_name += str(i)+'_'
+	file_name += str(i+1)+'_'
 	if choice == 0:
 		file_name += 'O'
 	elif choice == 1:
@@ -139,7 +148,13 @@ for i in range(10):
 		file_name += 'S'
 	else:
 		file_name += 'W'
+	orig_image[i]=orig_image[i].resize((25,25))
 	orig_image[i].save(file_name+'.PNG',"PNG")
+	# orig_image[i].save(os.path.join(folder_name,file_name+'.PNG'),"PNG")
+
+
+
+
 
 # Test Code :
 
