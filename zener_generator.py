@@ -151,8 +151,10 @@ for i in range(int(sys.argv[2])):
 	else:
 		file_name += 'W'
 	# Convert grayscale image to B/W.
-	orig_image[i] = orig_image[i].convert('L')
+	orig_image[i] = orig_image[i].convert('1')
 	orig_image[i] = orig_image[i].point(lambda x: 0 if x<128 else 255, '1')
+	im_array = np.fromstring(orig_image[i].tobytes(), dtype=np.uint8) #1-dimensional
+	print im_array
 	#resizing the image to one that is required.
 	orig_image[i]=orig_image[i].resize((25,25))
 	orig_image[i].save(file_name+'.PNG',"PNG")
