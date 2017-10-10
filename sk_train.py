@@ -33,5 +33,5 @@ from PIL import Image
 im = Image.open("1_P.PNG")
 im_array = np.fromstring(im.tobytes(), dtype=np.uint8) #1-dimensional
 print im_array
-im_array.reshape((im.size[1], im.size[0], 3)) 
+im_array.reshape((im.size[1], im.size[0], 3))
 print im_array
