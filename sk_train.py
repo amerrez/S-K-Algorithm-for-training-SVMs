@@ -1,5 +1,19 @@
 import numpy as np
 from PIL import Image
+import sys
+import os
+
+#checking if there is data in the folder specified by user in arg[5]
+args = sys.argv
+train_folder_name = args[5]
+file_format = ["Q.PNG","O.PNG","P.PNG","S.PNG"]
+found_data = False
+for filepng in os.listdir(train_folder_name):
+    for data_format in file_format:
+        if filepng.endswith(data_format):
+            found_data = True
+if found_data != True:
+    print("NO DATA")
 
 
 
@@ -28,10 +42,10 @@ from PIL import Image
 #     img.show()
 
 
-
-
-im = Image.open("1_P.PNG")
-im_array = np.fromstring(im.tobytes(), dtype=np.uint8) #1-dimensional
-print im_array
-im_array.reshape((im.size[1], im.size[0], 3))
-print im_array
+#
+#
+# im = Image.open("1_P.PNG")
+# im_array = np.fromstring(im.tobytes(), dtype=np.uint8) #1-dimensional
+# print im_array
+# im_array.reshape((im.size[1], im.size[0], 3))
+# print im_array
