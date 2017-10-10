@@ -46,9 +46,11 @@ def position(n):
 def orientation(n):
 	"Method to change orientation of an image"
 	orig_image[n] = orig_image[n].convert('RGBA')
-	orig_image[n] = orig_image[n].rotate(np.random.randint(ROTATION_DEG),expand = 1)
+	orig_image[n] = orig_image[n].rotate(np.random.randint(ROTATION_DEG),
+									expand = 1)
 	white = Image.new('RGBA',orig_image[n].size, (255,255,255,255))
-	orig_image[n] = Image.composite(orig_image[n],white,orig_image[n]) # to avoid black corners
+	# to avoid black corners
+	orig_image[n] = Image.composite(orig_image[n],white,orig_image[n]) 
 	choice = np.random.randint(3)
 	if choice == 0:
 		orig_image[n]=orig_image[n].transpose(Image.FLIP_LEFT_RIGHT)
@@ -60,7 +62,7 @@ def orientation(n):
 def size(n):
 	"Method to expand or shrink object in an image"
 	width, height = orig_image[n].size
-	percentage = np.random.randint(MAX_SIZE) # denotes percentage of expand/shrink 
+	percentage = np.random.randint(MAX_SIZE)# denotes percentage of expand/shrink 
 	do_expand = np.random.randint(2) # 1 to expand 0 to shrink
 	if do_expand == 0:
 		orig_image[n] = orig_image[n].resize((int(250-250*(percentage/100.0))
@@ -148,44 +150,10 @@ for i in range(int(sys.argv[2])):
 		file_name += 'S'
 	else:
 		file_name += 'W'
+	# Convert grayscale image to B/W.
+	orig_image[i] = orig_image[i].convert('L')
+	orig_image[i] = orig_image[i].point(lambda x: 0 if x<128 else 255, '1')
+	#resizing the image to one that is required.
 	orig_image[i]=orig_image[i].resize((25,25))
 	orig_image[i].save(file_name+'.PNG',"PNG")
 	# orig_image[i].save(os.path.join(folder_name,file_name+'.PNG'),"PNG")
-
-
-
-
-
-# Test Code :
-
-# for i in range(5):
-# 	choice = i#np.random.randint(4)
-# 	image = images[choice]
-# 	orig_image.append(image)
-# 	no_of_transformations = 1#np.random.randint(10)
-# 	for j in range(no_of_transformations):
-# 		case = 2#np.random.randint(5)
-# 		if case == 0:
-# 			position(i)
-# 		elif case == 1:
-# 			orientation(i)
-# 		elif case == 2:
-# 			size(i)
-# 		elif case == 3:
-# 			thickness(i)
-# 		else:
-# 			marks(i)
-# 	orig_image[i].resize((250,250))
-# 	file_name = ''
-# 	file_name += str(i)+'_'
-# 	if choice == 0:
-# 		file_name += 'O'
-# 	elif choice == 1:
-# 		file_name += 'P'
-# 	elif choice == 2:
-# 		file_name += 'Q'
-# 	elif choice == 3:
-# 		file_name += 'S'
-# 	else:
-# 		file_name += 'W'
-# 	orig_image[i].save(file_name+'.PNG',"PNG")
