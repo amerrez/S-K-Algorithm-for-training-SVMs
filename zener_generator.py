@@ -6,16 +6,16 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 ########## CONSTANTS ###############
 
 SIZE = 25,25
-POSITION_BOUNDS = 10 # max 300 
+POSITION_BOUNDS = 10 # max 300
 ROTATION_DEG = 90
 MAX_SIZE = 10 # % change in size
-THICKNESS = 5 
+THICKNESS = 5
 MARKS_INDEX = 5
 
 ####################################
 
 cards = np.zeros(5)
-####### open and resize images to 250 pixels 
+####### open and resize images to 250 pixels
 ##  as it is easy to analyze  #####
 circle = Image.open("zener-images/circle.jpg")
 plus = Image.open("zener-images/plus.jpg")
@@ -29,11 +29,11 @@ star = star.resize((250,250))
 wavy = wavy.resize((250,250))
 images = [circle,plus,square,star,wavy] # original images stored in array
 orig_image = [] #Declared global array to stored test data set so that
-				# it can be accessed by all methods 
+				# it can be accessed by all methods
 
 def position(n):
 	"Method to reposition a image"
-	temp_image = Image.new('RGBA', (300,300), (255,255,255,255)) 
+	temp_image = Image.new('RGBA', (300,300), (255,255,255,255))
 	x1 =  np.random.randint(POSITION_BOUNDS) #starting positions
 	y1 = np.random.randint(POSITION_BOUNDS)
 	x2,y2 = 250,250 # size of original image
@@ -41,7 +41,7 @@ def position(n):
 	temp_image.resize((250,250))
 	orig_image[n] = temp_image
 
-	
+
 
 def orientation(n):
 	"Method to change orientation of an image"
@@ -50,7 +50,7 @@ def orientation(n):
 									expand = 1)
 	white = Image.new('RGBA',orig_image[n].size, (255,255,255,255))
 	# to avoid black corners
-	orig_image[n] = Image.composite(orig_image[n],white,orig_image[n]) 
+	orig_image[n] = Image.composite(orig_image[n],white,orig_image[n])
 	choice = np.random.randint(3)
 	if choice == 0:
 		orig_image[n]=orig_image[n].transpose(Image.FLIP_LEFT_RIGHT)
@@ -62,7 +62,7 @@ def orientation(n):
 def size(n):
 	"Method to expand or shrink object in an image"
 	width, height = orig_image[n].size
-	percentage = np.random.randint(MAX_SIZE)# denotes percentage of expand/shrink 
+	percentage = np.random.randint(MAX_SIZE)# denotes percentage of expand/shrink
 	do_expand = np.random.randint(2) # 1 to expand 0 to shrink
 	if do_expand == 0:
 		orig_image[n] = orig_image[n].resize((int(250-250*(percentage/100.0))
@@ -157,5 +157,7 @@ for i in range(int(sys.argv[2])):
 	print im_array
 	#resizing the image to one that is required.
 	orig_image[i]=orig_image[i].resize((25,25))
-	orig_image[i].save(file_name+'.PNG',"PNG")
+	# orig_image[i].show()
+	orig_image[i].save(folder_name+"/"+file_name+".PNG","PNG")
+	# im.save("out_image.png", "PNG")
 	# orig_image[i].save(os.path.join(folder_name,file_name+'.PNG'),"PNG")
