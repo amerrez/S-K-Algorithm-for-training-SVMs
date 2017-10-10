@@ -157,7 +157,5 @@ for i in range(int(sys.argv[2])):
 	print im_array
 	#resizing the image to one that is required.
 	orig_image[i]=orig_image[i].resize((25,25))
-	# orig_image[i].show()
+	#saving to the folder specified by the user argument sys.argv[1]
 	orig_image[i].save(folder_name+"/"+file_name+".PNG","PNG")
-	# im.save("out_image.png", "PNG")
-	# orig_image[i].save(os.path.join(folder_name,file_name+'.PNG'),"PNG")
