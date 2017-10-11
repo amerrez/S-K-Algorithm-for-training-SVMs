@@ -1,4 +1,6 @@
 import sys
+import math
+import numpy as np
 
 from skalgkernel import SKAlgKernel
 
@@ -21,6 +23,20 @@ def train(sk, eps, max_update_num):
     # xj1 is the first nagative value (image)
     # m is form slode 5
     # method for prime
+
+
+def stop(a, b, c, d, e, eps, classified_flag):
+    mi = []
+    if classified_flag:
+        for i in range(0, len(d)):
+            mi[i] = ((d[i] - e[i] + b - c) / math.sqrt(a + b - 2 * c))
+    else:
+        for i in range(0, len(d)):
+            mi[i] = ((e[i] - d[i]  + a - c) / math.sqrt(a + b - 2 * c))
+    t = mi.argmin()
+    if math.sqrt(a - b - 2*c) - mi[t] < eps:
+        return True
+    return False
 
 
 args = sys.argv
