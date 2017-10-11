@@ -32,7 +32,7 @@ orig_image = [] #Declared global array to stored test data set so that
 				# it can be accessed by all methods
 
 def position(n):
-	"Method to reposition a image"
+	"""Method to reposition a image"""
 	temp_image = Image.new('RGBA', (300,300), (255,255,255,255))
 	x1 =  np.random.randint(POSITION_BOUNDS) #starting positions
 	y1 = np.random.randint(POSITION_BOUNDS)
@@ -44,7 +44,7 @@ def position(n):
 
 
 def orientation(n):
-	"Method to change orientation of an image"
+	"""Method to change orientation of an image"""
 	orig_image[n] = orig_image[n].convert('RGBA')
 	orig_image[n] = orig_image[n].rotate(np.random.randint(ROTATION_DEG),
 									expand = 1)
@@ -60,9 +60,9 @@ def orientation(n):
 
 
 def size(n):
-	"Method to expand or shrink object in an image"
+	"""Method to expand or shrink object in an image"""
 	width, height = orig_image[n].size
-	percentage = np.random.randint(MAX_SIZE)# denotes percentage of expand/shrink
+	percentage = np.random.randint(MAX_SIZE)# denotes % of expand/shrink
 	do_expand = np.random.randint(2) # 1 to expand 0 to shrink
 	if do_expand == 0:
 		orig_image[n] = orig_image[n].resize((int(250-250*(percentage/100.0))
@@ -82,7 +82,7 @@ def size(n):
 
 
 def thickness(n):
-	"Method to change thickness of an object in image"
+	"""Method to change thickness of an object in image"""
 	thick= np.random.randint(THICKNESS)
 	thin = np.random.randint(THICKNESS)
 	for i in range(thick):
@@ -93,7 +93,7 @@ def thickness(n):
 
 
 def marks(n):
-	"Method to introduce various random marks in an image"
+	"""Method to introduce various random marks in an image"""
 	draw = ImageDraw.Draw(orig_image[n])
 	x,y = orig_image[n].size
 	for i in range(np.random.randint(MARKS_INDEX)):
@@ -150,11 +150,8 @@ for i in range(int(sys.argv[2])):
 		file_name += 'S'
 	else:
 		file_name += 'W'
-	# Convert grayscale image to B/W.
+	# Convert image to B/W.
 	orig_image[i] = orig_image[i].convert('1')
-	orig_image[i] = orig_image[i].point(lambda x: 0 if x<128 else 255, '1')
-	im_array = np.fromstring(orig_image[i].tobytes(), dtype=np.uint8) #1-dimensional
-	print im_array
 	#resizing the image to one that is required.
 	orig_image[i]=orig_image[i].resize((25,25))
 	#saving to the folder specified by the user argument sys.argv[1]
