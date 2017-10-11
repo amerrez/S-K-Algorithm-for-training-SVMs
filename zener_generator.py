@@ -15,7 +15,7 @@ MARKS_INDEX = 5
 ####################################
 
 cards = np.zeros(5)
-####### open and resize images to 250 pixels
+####### open and resize data to 250 pixels
 ##  as it is easy to analyze  #####
 circle = Image.open("zener-images/circle.jpg")
 plus = Image.open("zener-images/plus.jpg")
@@ -27,12 +27,12 @@ plus = plus.resize((250,250))
 square = square.resize((250,250))
 star = star.resize((250,250))
 wavy = wavy.resize((250,250))
-images = [circle,plus,square,star,wavy] # original images stored in array
+images = [circle,plus,square,star,wavy] # original data stored in array
 orig_image = [] #Declared global array to stored test data set so that
 				# it can be accessed by all methods
 
 def position(n):
-	"""Method to reposition a image"""
+	"""Method to reposition alpha image"""
 	temp_image = Image.new('RGBA', (300,300), (255,255,255,255))
 	x1 =  np.random.randint(POSITION_BOUNDS) #starting positions
 	y1 = np.random.randint(POSITION_BOUNDS)
