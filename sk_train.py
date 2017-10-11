@@ -68,21 +68,26 @@ def train():
     xi1p = prime(xi1)
     xj1p = prime(xj1)
     xip = prime(xi)
-    kernal(x,y)
+    A = kernal(xi1p,xi1p)
+    B = kernal(xj1p,xj1p)
+    C = kernal(xi1p,xj1p)
+    D = 
     #xj1 is the first nagative value (image)
     #m is form slode 5
     #method for prime
 
 def kernal(x,y):
+    #TODO this need tp be tested
     return (np.dot(x.transpose(),y)+1)^4
 
-def prime(x):
+def prime(x): # make sure we are handeling the different values correctly (vector xi or a single value vector)
     #TODO calculate lambda where lambda <= r/rrminus + rrplus: i suggest that we make it in the middle of the range of the inequality by dividing the right sie of the inequality by 2
+    #TODO see if we can move the m calculation to outside the function (if its always the same)
 xi_sum = np.array(xi[1])#initialize
 for i in xrange(1,xi):
     xi_sum = np.add(xi_sum,xi[i])
     m = xi_sum/len(xi)
-    return lambda*xi + (1-lambda)*m
+    return lambda*x + (1-lambda)*m
 
 read()
 train()
