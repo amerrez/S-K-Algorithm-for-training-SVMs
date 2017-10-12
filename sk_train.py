@@ -37,7 +37,7 @@ def train(sk, eps, max_update_num):
             c_flag = False
         is_stop, t = sk.stop(sk.A, sk.B, sk.C, sk.D, sk.E, epsilon, c_flag)
         if not is_stop:
-            sigma = (t == i? 1: 0) # is this the right i?
+            sigma = 1 if t== i else 0 # is this the right i?
             # TODO what is xt in adaptation step??? Assuming xt = [1]
             x, y = [1] #TODO Note xt is the element in xi where i = t
             sk.adapt(c_flag, i, sigma, sk.A, sk.B, sk.C, sk.D[t], sk.E[t], x, y)
