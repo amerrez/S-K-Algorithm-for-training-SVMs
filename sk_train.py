@@ -18,10 +18,10 @@ def train(sk, eps, max_update_num):
     A = sk.kernel(xi1p, xi1p, KERNEL_TYPE)
     B = sk.kernel(xj1p, xj1p, KERNEL_TYPE)
     C = sk.kernel(xi1p, xj1p, KERNEL_TYPE)
-    D = sk.kernel(xip, xi1p, KERNEL_TYPE)
-    E = sk.kernel(xip, xj1p, KERNEL_TYPE)
+    D = sk.kernel(xi, xi1p, KERNEL_TYPE)
+    E = sk.kernel(xi, xj1p, KERNEL_TYPE)
     # xj1 is the first nagative value (image)
-    # m is form slode 5
+    # m is form slide 5
     # method for prime
 
     #
@@ -37,13 +37,10 @@ def train(sk, eps, max_update_num):
             c_flag = False
         is_stop, t = sk.stop(sk.A, sk.B, sk.C, sk.D, sk.E, epsilon, c_flag)
         if not is_stop:
-            # s is sigma which is calculated somewhere at initialization step
-            # assume s = 1 for now
-            # TODO assign valid sigma to this execution
-            s = 1
+            sigma = (t == i? 1: 0) # is this the right i?
             # TODO what is xt in adaptation step??? Assuming xt = [1]
-            x, y = [1]
-            sk.adapt(c_flag, i, s, sk.A, sk.B, sk.C, sk.D[t], sk.E[t], x, y)
+            x, y = [1] #TODO Note xt is the element in xi where i = t
+            sk.adapt(c_flag, i, sigma, sk.A, sk.B, sk.C, sk.D[t], sk.E[t], x, y)
         else:
             print 'Training completed!'
 
