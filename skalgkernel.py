@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import utils
+import math
 
 
 class SKAlgKernel(object):
@@ -78,8 +79,8 @@ class SKAlgKernel(object):
         return mp, mn
 
     def kernel(self, x, y, kernel_type):
-        if kernel_type == 'P': # Polynomial kernel
-            return self.polynomial_kernel(x, y, 4)
+        if kernel_type == 'P':  # Polynomial kernel
+            return self.polynomial_kernel(x, y, 4)  # For this HW, p = 4
         else:
             print 'Kernel type is not supported'
             exit(0)
@@ -103,3 +104,33 @@ class SKAlgKernel(object):
         rn = max(xin_norms)
         lamb_da = (r / (rp + rn)) / 2
         return lamb_da * x + (1 - lamb_da) * self.m
+
+    def stop(self, a, b, c, d, e, eps, classified_flag):
+        mi = []
+        if classified_flag:
+            for i in range(0, len(d)):
+                mi[i] = ((d[i] - e[i] + b - c) / math.sqrt(a + b - 2 * c))
+        else:
+            for i in range(0, len(d)):
+                mi[i] = ((e[i] - d[i] + a - c) / math.sqrt(a + b - 2 * c))
+        t = mi.argmin()
+        if math.sqrt(a - b - 2 * c) - mi[t] < eps:
+            return True, t
+        return False, t
+
+    def adapt(self, c_flag, i, sigma_t, a, b, c, dt, et, x, y):
+        k = self.kernel(x, y, 'P')
+        if c_flag:  # t belong to I+
+            m = (a - dt + et - c) / (a + k - 2 * (dt - et))
+            q = min(1, m)
+            self.alpha[i] = (1 -q) * i + q * sigma_t
+            self.A = a * ((1 - q) ** 2) + 2 * (1 -q) * q * dt + (q ** 2) * k
+            self.C = (1 - q)*c + q * et
+            self.D[i] = (1 - q) * self.D[i] + q * k
+        else:  # t belong to I-
+            m = (b - et + dt - c) / (b + k - 2 * (et - dt))
+            q = min(1, m)
+            self.alpha[i] = (1 - q) * i + q * sigma_t
+            self.B = b * ((1 - q) ** 2) + 2 * (1 - q) * q * et + (q ** 2) * k
+            self.C = (1 - q) * c + q * dt
+            self.E[i] = (1 - q) * self.E[i] + q * k

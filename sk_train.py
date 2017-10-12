@@ -24,19 +24,28 @@ def train(sk, eps, max_update_num):
     # m is form slode 5
     # method for prime
 
-
-def stop(a, b, c, d, e, eps, classified_flag):
-    mi = []
-    if classified_flag:
-        for i in range(0, len(d)):
-            mi[i] = ((d[i] - e[i] + b - c) / math.sqrt(a + b - 2 * c))
-    else:
-        for i in range(0, len(d)):
-            mi[i] = ((e[i] - d[i]  + a - c) / math.sqrt(a + b - 2 * c))
-    t = mi.argmin()
-    if math.sqrt(a - b - 2*c) - mi[t] < eps:
-        return True
-    return False
+    #
+    # From this point, I assume the initialization step is completed. So all
+    # the needed data are wrapped in SKAlgKernel object
+    # TODO:I may be wrong with this loop condition
+    # I just assume that I have input data for training
+    #c_flag = False
+    for i in range(0, len(sk.data)):
+        if sk.data[i] == class_letter:  # TODO: assume the positive case
+            c_flag = True
+        else:
+            c_flag = False
+        is_stop, t = sk.stop(sk.A, sk.B, sk.C, sk.D, sk.E, epsilon, c_flag)
+        if not is_stop:
+            # s is sigma which is calculated somewhere at initialization step
+            # assume s = 1 for now
+            # TODO assign valid sigma to this execution
+            s = 1
+            # TODO what is xt in adaptation step??? Assuming xt = [1]
+            x, y = [1]
+            sk.adapt(c_flag, i, s, sk.A, sk.B, sk.C, sk.D[t], sk.E[t], x, y)
+        else:
+            print 'Training completed!'
 
 
 args = sys.argv
