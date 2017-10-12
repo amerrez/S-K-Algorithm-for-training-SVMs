@@ -16,18 +16,8 @@ def delta(i, t):
 
 def train(sk, eps, max_update_num):
     # xi1 is the first positive value (image)
-    xi1 = sk.X[sk.first_index[0]]
-    xj1 = sk.X[sk.first_index[1]]
-    sk.calculate_ms()
-    xi1p = sk.prime(xi1)
-    xj1p = sk.prime(xj1)
-    xip = sk.prime(sk.X)
-    A = sk.kernel(xi1p, xi1p, KERNEL_TYPE)
-    B = sk.kernel(xj1p, xj1p, KERNEL_TYPE)
-    C = sk.kernel(xi1p, xj1p, KERNEL_TYPE)
-    D = sk.kernel(xi, xi1p, KERNEL_TYPE)
-    E = sk.kernel(xi, xj1p, KERNEL_TYPE)
-    # xj1 is the first nagative value (image)
+    sk.initialization(KERNEL_TYPE)
+    # xj1 is the first negative value (image)
     # m is form slide 5
     # method for prime
     #
@@ -59,6 +49,7 @@ def train(sk, eps, max_update_num):
             # (adapt_count >= max_update
             if i == len(sk.data[i]):
                 i = 0
+    print 'Training completed!!!'
 
 
 args = sys.argv

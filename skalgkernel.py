@@ -54,6 +54,7 @@ class SKAlgKernel(object):
                     if file_name.endswith(data_format):
                         found_data = True
             indexCounter += 1
+        print "X from read:", self.X
         if not found_data:
             print("NO DATA")
         return names_of_files
@@ -77,7 +78,7 @@ class SKAlgKernel(object):
 
     def kernel(self, x, y, kernel_type):
         if kernel_type == 'P':  # Polynomial kernel
-            return self.polynomial_kernel(x, y, 4)  # For this HW, p = 4
+            return self.__polynomial_kernel(x, y, 4)  # For this HW, p = 4
         else:
             print 'Kernel type is not supported'
             exit(0)
@@ -94,12 +95,29 @@ class SKAlgKernel(object):
         xin_norms = []
         for x in self.X:
             xip_norms = np.linalg.norm(x - self.mp)
-        rp = max(xip_norms)
+        rp = xip_norms.max()
         for x in self.X:
             xin_norms = np.linalg.norm(x - self.mn)
-        rn = max(xin_norms)
+        rn = xin_norms.max()
         lamb_da = (r / (rp + rn)) / 2
         return lamb_da * x + (1 - lamb_da) * self.m
+
+
+    def initialization(self, kernel_type):
+        # xi1 is the first positive value (image)
+        xi1 = self.X[self.first_index[0]]
+        xj1 = self.X[self.first_index[1]]
+        # m calculation formula indicates in slide 5 (Sep 27)
+        self.calculate_ms()
+        xi1p = self.prime(xi1)
+        xj1p = self.prime(xj1)
+        self.A = self.kernel(xi1p, xi1p, kernel_type)
+        self.B = self.kernel(xj1p, xj1p, kernel_type)
+        self.C = self.kernel(xi1p, xj1p, kernel_type)
+        for i in range(0, len(self.X)):
+            xip = self.prime(self.X[i])
+            self.D[i] = self.kernel(xip, xi1p, kernel_type)
+            self.E[i] = self.kernel(xip, xj1p, kernel_type)
 
     def stop(self, a, b, c, d, e, eps, classified_flag):
         mi = []
