@@ -6,11 +6,13 @@ from skalgkernel import SKAlgKernel
 
 KERNEL_TYPE = 'P'  # P: for polynonimal, G: Gauss, L: Layer
 
-def delta(i,t):
-    if (i==t):
+
+def delta(i, t):
+    if i == t:
         return 1.0
-    else :
+    else:
         return 0.0
+
 
 def train(sk, eps, max_update_num):
     # xi1 is the first positive value (image)
@@ -34,19 +36,30 @@ def train(sk, eps, max_update_num):
     # TODO:I may be wrong with this loop condition
     # I just assume that I have input data for training
     #c_flag = False
-    for i in range(0, len(sk.data)):
+    adapt_count = 0
+    is_stop = False
+    i = 0
+    while not is_stop and adapt_count < max_update_num:
         if sk.data[i] == class_letter:  # TODO: assume the positive case
             c_flag = True
         else:
             c_flag = False
-        is_stop, t = sk.stop(sk.A, sk.B, sk.C, sk.D, sk.E, epsilon, c_flag)
+        # The stop function check the model convergence < epsilon
+        is_stop, t = sk.stop(sk.A, sk.B, sk.C, sk.D, sk.E, eps, c_flag)
         if not is_stop:
-            sigma = 1 if t== i else 0 # is this the right i?
+            sigma = 1 if t == i else 0  # is this the right i?
             # TODO what is xt in adaptation step??? Assuming xt = [1]
-            x, y = [1] #TODO Note xt is the element in xi where i = t
+            x, y = [1]  # TODO Note xt is the element in xi where i = t
             sk.adapt(c_flag, i, sigma, sk.A, sk.B, sk.C, sk.D[t], sk.E[t], x, y)
+            adapt_count += 1
         else:
-            print 'Training completed!'
+            i += 1
+            # Repeat the process until convergence < epsilon or
+            # more than max_updates adaptation steps have been done
+            # (adapt_count >= max_update
+            if i == len(sk.data[i]):
+                i = 0
+
 
 args = sys.argv
 epsilon = args[1]
