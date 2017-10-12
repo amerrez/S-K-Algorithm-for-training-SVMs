@@ -6,6 +6,11 @@ from skalgkernel import SKAlgKernel
 
 KERNEL_TYPE = 'P'  # P: for polynonimal, G: Gauss, L: Layer
 
+def delta(i,t):
+    if (i==t):
+        return 1.0
+    else :
+        return 0.0
 
 def train(sk, eps, max_update_num):
     # xi1 is the first positive value (image)
@@ -23,7 +28,6 @@ def train(sk, eps, max_update_num):
     # xj1 is the first nagative value (image)
     # m is form slide 5
     # method for prime
-
     #
     # From this point, I assume the initialization step is completed. So all
     # the needed data are wrapped in SKAlgKernel object
@@ -43,7 +47,6 @@ def train(sk, eps, max_update_num):
             sk.adapt(c_flag, i, sigma, sk.A, sk.B, sk.C, sk.D[t], sk.E[t], x, y)
         else:
             print 'Training completed!'
-
 
 args = sys.argv
 epsilon = args[1]
