@@ -32,9 +32,6 @@ class SKAlgKernel(object):
         indexCounter = 0
         names_of_files = []
         for file_name in os.listdir(train_folder_name):
-            ###
-            # here we should check each file.. and call alpha training method
-            ###
             names_of_files.append(file_name)
             if ("_" + class_letter + ".") in file_name:
                 self.Ip.append(indexCounter)
@@ -86,7 +83,6 @@ class SKAlgKernel(object):
             exit(0)
 
     def __polynomial_kernel(self, x, y, p):
-        # TODO test
         return (np.dot(x.transpose(), y) + 1) ** p
 
     def prime(self, x):  # make sure we are handling the different values
@@ -113,7 +109,7 @@ class SKAlgKernel(object):
         else:
             for i in range(0, len(d)):
                 mi[i] = ((e[i] - d[i] + a - c) / math.sqrt(a + b - 2 * c))
-        t = mi.argmin()
+        t = mi.argmin() #TODO Note: t has to be the index of that image
         if math.sqrt(a - b - 2 * c) - mi[t] < eps:
             return True, t
         return False, t
