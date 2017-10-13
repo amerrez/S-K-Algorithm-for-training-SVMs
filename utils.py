@@ -4,6 +4,7 @@ from PIL import Image
 
 # this takes alpha file name and returns Numpy array of that image
 def load_image(file_name):
+    im=0
     try:
         im = Image.open(file_name)
         im = np.array(list(im.getdata()))  # create np array from image pixels

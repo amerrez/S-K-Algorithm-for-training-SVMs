@@ -15,17 +15,17 @@ class SKAlgKernel(object):
         self.alpha = []
         self.first_index = [-1, -1]  # first_index[0] indicates 1st +ve,
         # 1 indicates 1st -ve
-        self.data = []  # In this HW, data is list of images
         self.Ip = []  # I+
         self.In = []  # I-
-        self.xi1 = []  # positive input data set
-        self.xj1 = []  # negative input data set
-        self.X = []  # vector of input data, this is going to be alpha list of
+        self.xi1 = np.array([])  # positive input data set
+        self.xj1 = np.array([])  # negative input data set
+        self.X = np.array([])  # vector of input data, this is going to be alpha list of
         # the data, it's an array of arrays
-        self.A, self.B, self.C = [], [], []
-        self.D, self.E = [], []
-        self.xip = []
+        self.A, self.B, self.C = np.array([]),np.array([]),np.array([])
+        self.D, self.E = np.array([]),np.array([])
+        self.xip = np.array([])
         self.m, self.mp, self.mn = 0, 0, 0
+        self.lamb_da = 0
 
     def read(self, class_letter, train_folder_name):
         found_data = False
@@ -47,7 +47,7 @@ class SKAlgKernel(object):
                     self.first_index[1] = 1
                 else:
                     self.alpha.append(0)
-            self.X.append(
+            np.append(self.X,
                 utils.load_image(train_folder_name + "/" + file_name))
             if not found_data:  # TODO Will this work ?
                 for data_format in self.FILE_FORMAT:
@@ -99,8 +99,8 @@ class SKAlgKernel(object):
         for x in self.X:
             xin_norms = np.linalg.norm(x - self.mn)
         rn = xin_norms.max()
-        lamb_da = (r / (rp + rn)) / 2
-        return lamb_da * x + (1 - lamb_da) * self.m
+        self.lamb_da = (r / (rp + rn)) / 2
+        return self.lamb_da * x + (1 - self.lamb_da) * self.m
 
 
     def initialization(self, kernel_type):
@@ -119,32 +119,32 @@ class SKAlgKernel(object):
             self.D[i] = self.kernel(xip, xi1p, kernel_type)
             self.E[i] = self.kernel(xip, xj1p, kernel_type)
 
-    def stop(self, a, b, c, d, e, eps, classified_flag):
-        mi = []
-        if classified_flag:
-            for i in range(0, len(d)):
-                mi[i] = ((d[i] - e[i] + b - c) / math.sqrt(a + b - 2 * c))
-        else:
-            for i in range(0, len(d)):
-                mi[i] = ((e[i] - d[i] + a - c) / math.sqrt(a + b - 2 * c))
-        t = mi.argmin() #TODO Note: t has to be the index of that image
+    def stop(self, a, b, c, d, e, eps):
+        mi = np.array([])
+        for i in xrange(len(self.X)):
+            if i in Ip:
+                mi.append((d[i] - e[i] + b - c) / math.sqrt(a + b - 2 * c))
+            else:
+                mi.append((e[i] - d[i] + a - c) / math.sqrt(a + b - 2 * c))
+        t = np.argmin(mi)
         if math.sqrt(a - b - 2 * c) - mi[t] < eps:
             return True, t
         return False, t
 
-    def adapt(self, c_flag, i, sigma_t, a, b, c, dt, et, x, y):
+    def adapt(self, i, delta, a, b, c, dt, et, x, y, t):
         k = self.kernel(x, y, 'P')
-        if c_flag:  # t belong to I+
+        if t in Ip:  # t belong to I+
             m = (a - dt + et - c) / (a + k - 2 * (dt - et))
             q = min(1, m)
-            self.alpha[i] = (1 -q) * i + q * sigma_t
-            self.A = a * ((1 - q) ** 2) + 2 * (1 -q) * q * dt + (q ** 2) * k
+            self.alpha[i] = (1 -q) * alpha[i] + q * delta
+            self.A = self.A * ((1 - q) ** 2) + 2 * (1 -q) * q * dt + (q ** 2) * k
             self.C = (1 - q)*c + q * et
-            self.D[i] = (1 - q) * self.D[i] + q * k
+            for i in range(len(self.X)):
+                self.D[i] = (1 - q) * self.D[i] + q * k
         else:  # t belong to I-
             m = (b - et + dt - c) / (b + k - 2 * (et - dt))
             q = min(1, m)
-            self.alpha[i] = (1 - q) * i + q * sigma_t
-            self.B = b * ((1 - q) ** 2) + 2 * (1 - q) * q * et + (q ** 2) * k
-            self.C = (1 - q) * c + q * dt
+            self.alpha[i] = (1 - q) * alpha[i] + q * delta
+            self.B = self.B * ((1 - q) ** 2) + 2 * (1 - q) * q * et + (q ** 2) * k
+            self.C = (1 - q) * self.C + q * dt
             self.E[i] = (1 - q) * self.E[i] + q * k
