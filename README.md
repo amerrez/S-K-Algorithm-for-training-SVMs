@@ -1,1 +1,1 @@
-# S-K-Algorithm-for-training-SVMs
+# CS256HW2

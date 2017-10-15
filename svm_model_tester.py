@@ -4,6 +4,8 @@ import re
 import utils
 
 model_file_name = args[1]
+lamb_da = -1
+m = []
 
 def validate_arguments(arguments):
     if len(arguments) < 3:
@@ -23,21 +25,40 @@ def test(test_folder_name):
     image_files = os.listdir(test_folder_name)
     trial_num, correct_sum, false_positive_sume, false_negative_sum = 0
     for f in image_files:
-        output = ''
-        trial_num += 1
-        output += str(trial_num)
+        model_result = self.predict(test_folder_name,f)
+        #correct
+        if (model_result and image_letter == class_letter) or (not model_result and
+                                                image_letter != class_letter):
+            result_counter+=1
+            print("Correct")
+        elif(model_result and image_letter != class_letter):
+            false_Positive +=1
+            print("False Positive")
+        elif(not model_result and image_letter == class_letter):
+            false_Negative +=1
+            print("False Negative")
+    total_sum = false_Negative+false_Positive+result_counter
+    fraction_correct = result_counter/total_sum
+    fraction_false_Positive = false_Positive/total_sum
+    fraction_false_Negative = false_Negative/total_sum
+    output = 'fraction_correct: '+str(fraction_correct)+"\n"
+    output+='fraction_false_Positive: '+str(fraction_false_Positive)+"\n"
+    output+='fraction_false_Negative: '+str(fraction_false_Negative)+"\n"
+    print(output)
 
 # this is the main logic of test
 def predict(test_folder_name,test_file_name):
     test_item = utils.load_image(test_folder_name+"/"+test_file_name)
     f = open(self.model_file_name)
+    class_letter = f.readline()[-1]
     params = f.readline()
-    mp,mn,lamb_da = params.split(",")
-    mp = np.array(mp) # this doesn't work, we need to mfind a better way to convert strin to @ dimensional array
+    m,mp,mn,lamb_da = params.split(",")
+    m = np.array(m)
+    mp = np.array(mp)
     mn = np.array(mn)
     lamb_da = int(lamb_da)
     A,B = f.readline().split(",")
-    A = np.array(A) # this doesn't work, we need to mfind a better way to convert strin to @ dimensional array
+    A = np.array(A)
     B = np.array(B)
     index_vec = []
     alpha_vec = []
@@ -46,19 +67,25 @@ def predict(test_folder_name,test_file_name):
         index,alpha,y = [map(f.readline().split(","),int)]
         index_vec.append(index)
         alpha_vec.append(alpha)
-        y_vec.append
+        y_vec.append(y)
+        g = []
     #calculating the hyper plane g(x)
-    for svm in svm_vector: #TODO svm_vector, this is the list of x_prime (the x values from training data that are called support vecotrs and their alpha is 1 while all other alhpas are 0)
+    for svm in svm_vector:
         k.append(kernal(test_item,svm))
     for i in xrange(len(alpha_vec)):
         g += alpha_vec[i] * y_vec[i] * k[i] + (B−A)/2)
-    # g(x) out put could be one of two things(we are guessing)
-    # 1) if its an integer value 0 or 1 then
-        # 1 means test image belongs to the class and 0 is otherwise
-    # 2) the out put of g(X) could be an equasion and then we need to use it to see if the tes_items belong to the right side or the left side 
+    if g == 0:
+        model_result = False
+    else:
+        model_result = True
+    image_num = int(test_file_name.split('_')[0])
+    image_letter = test_file_name.split('_')[1][0]
+    correct_result_counter=0
+    false_Positive = 0
+    false_Negative = 0
 
-
-
+def prime(x):
+    return self.lamb_da * x + (1 - self.lamb_da) * self.m
 
 def kernel(self, x, y):
     return (np.dot(x.transpose(), y) + 1) ** 4
@@ -84,3 +111,5 @@ if validate_arguments(sys.argv):
         exit(0)
 
     regex = r"\d + '_' + ('P' | 'W' | 'Q' | 'S')"
+
+test()
